@@ -1,57 +1,3 @@
-// Controll ON/OFF button
-function controlButton() {
-    //get the value of button ON/OFF
-    var button_state = document.querySelector('.slider')
-    var style = window.getComputedStyle(button_state, ":after").content;
-
-    //if button is on, auto mode is on then we will disable manual button
-    if (style == '"ON"') {
-        document.getElementById("button_one").disabled = true;
-        document.getElementById("button_two").disabled = true;
-        document.getElementById("button_one").style.backgroundColor = "rgba(21, 3, 3, 0.25)";
-        document.getElementById("button_two").style.backgroundColor = "rgba(21, 3, 3, 0.25)";
-        document.getElementById('state').innerText = "AUTO";
-    }
-    else {
-        document.getElementById("button_one").disabled = false;
-        document.getElementById("button_two").disabled = false;
-        document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-        document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-        document.getElementById('state').innerText = "MANUAL";
-
-    }
-
-
-}
-
-// control Open/Close Button
-function controlOpenButton() {
-    document.getElementById('state').innerText = "Opening";
-    document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-    document.getElementById("button_one").style.backgroundColor = "rgba(24, 231, 24, 0.515)";
-
-    setTimeout(() => {
-        document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-        document.getElementById('state').innerText = "Opened";
-
-    }, 5000);
-
-
-}
-
-
-function controlCloseButton() {
-    document.getElementById('state').innerText = "Closing";
-    document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-    document.getElementById("button_two").style.backgroundColor = "rgba(223, 32, 32, 0.64)";
-    setTimeout(() => {
-        document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
-        document.getElementById('state').innerText = "Closed";
-
-    }, 5000);
-}
-
-
 //firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyB3LYR7axlF2QC8iu-lL5HkyjUwdCPobHs",
@@ -67,26 +13,14 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
+//update data in firebase realtime database based on UI
 $(document).ready(function () {
-    console.log("hello")
-    var database = firebase.database();
+
     var autoMode;
-    var action;
-    // database.ref().on("value", function(snap){
-    // 	autoMode = snap.val().autoMode;
-    // 	if(autoMode == 1){
-    // 		document.getElementById("unact").style.display = "none";
-    // 		document.getElementById("act").style.display = "block";
-    // 	} else {
-    // 		document.getElementById("unact").style.display = "block";
-    // 		document.getElementById("act").style.display = "none";
-    // 	}
-    // });
-
+    //Store data of auto mode
+    // 0: auto, 1: manual
     $("#toggle").click(function () {
-        console.log("This is the testing line")
         var firebaseRef = firebase.database().ref().child("autoMode");
-
         if (autoMode == 1) {
             firebaseRef.set(0);
             autoMode = 0;
@@ -95,20 +29,92 @@ $(document).ready(function () {
             autoMode = 1;
         }
     });
-    
+    //store data of action
+    // 0: open, 1: close
     $("#button_one").click(function () {
-        console.log("This is button one")
         var firebaseRef = firebase.database().ref().child("action");
         firebaseRef.set(0) //open curtain
-        
+
     });
 
     $("#button_two").click(function () {
-        console.log("This is button two")
         var firebaseRef = firebase.database().ref().child("action");
         firebaseRef.set(1) //close curtain
-        
     });
-
-
 });
+
+// Controll ON/OFF button state
+function controlButton() {
+    //get the value of button ON/OFF
+    var button_state = document.querySelector('.slider')
+    var style = window.getComputedStyle(button_state, ":after").content;
+
+    //If the auto mode is on -> disable Open/close button.
+    if (style == '"ON"') {
+        document.getElementById("button_one").disabled = true;
+        document.getElementById("button_two").disabled = true;
+        document.getElementById("button_one").style.backgroundColor = "rgba(21, 3, 3, 0.25)";
+        document.getElementById("button_two").style.backgroundColor = "rgba(21, 3, 3, 0.25)";
+        document.getElementById('state').innerText = "AUTO";
+    }
+    else {
+        document.getElementById("button_one").disabled = false;
+        document.getElementById("button_two").disabled = false;
+        document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById('state').innerText = "MANUAL";
+    }
+}
+
+var onOffButton = "";
+// Control Open/Close Button state
+
+function controlOpenButton() {
+    if (onOffButton == 0) {
+        document.getElementById('state').innerText = "Opening";
+        document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById("button_one").style.backgroundColor = "rgba(24, 231, 24, 0.515)";
+
+        setTimeout(() => {
+            document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+            document.getElementById('state').innerText = "Opened";
+
+        }, 5000);
+        onOffButton =1;
+    }
+    else{
+        document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById("button_one").style.backgroundColor = "rgba(195, 208, 6, 0.848)";
+
+        setTimeout(() => {
+            document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+            document.getElementById('state').innerText = "Opened";
+
+        }, 2000);
+    }
+}
+
+
+function controlCloseButton() {
+    if (onOffButton == 1){
+        document.getElementById('state').innerText = "Closing";
+        document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById("button_two").style.backgroundColor = "rgba(223, 32, 32, 0.64)";
+        setTimeout(() => {
+            document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+            document.getElementById('state').innerText = "Closed";
+        }, 5000);
+        onOffButton = 0;
+    }
+    else{
+        document.getElementById("button_one").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+        document.getElementById("button_two").style.backgroundColor = "rgba(195, 208, 6, 0.848)";
+        setTimeout(() => {
+            document.getElementById("button_two").style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+            document.getElementById('state').innerText = "Closed";
+        }, 2000);
+    }
+    
+}
+
+
